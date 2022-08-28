@@ -1,0 +1,101 @@
+targets = [
+    { triple = "x86_64-unknown-linux-gnu" },
+    { triple = "x86_64-unknown-linux-musl" },
+    { triple = "x86_64-apple-darwin" },
+    { triple = "x86_64-pc-windows-msvc" },
+    { triple = "armv7-unknown-linux-gnueabihf" },
+    { triple = "aarch64-unknown-linux-gnueabihf" },
+]
+
+[advisories]
+vulnerability = "deny"
+unmaintained = "deny"
+notice = "deny"
+ignore = []
+
+[licenses]
+unlicensed = "deny"
+copyleft = "deny"
+allow-osi-fsf-free = "neither"
+confidence-threshold = 0.93
+default = "deny"
+private = { ignore = true }
+allow = [ "Apache-2.0", "MIT", "Unlicense", "Zlib", "BSD-3-Clause", "Unicode-DFS-2016" ]
+exceptions = [
+    # { name = "ring", allow = [ "MIT", "ISC", "OpenSSL" ] },
+]
+
+[[licenses.clarify]]
+name = "ring"
+expression = "MIT AND ISC AND OpenSSL"
+license-files = [
+    { path = "LICENSE", hash = 0xbd0eed23 },
+]
+
+[[licenses.clarify]]
+name = "webpki"
+expression = "ISC"
+license-files = [
+    { path = "LICENSE", hash = 0x001c7e6c },
+]
+
+[[licenses.clarify]]
+name = "encoding_rs"
+expression = "(Apache-2.0 OR MIT) AND BSD-3-Clause"
+license-files = [
+    { path = "COPYRIGHT", hash = 0x39f8ad31 }
+]
+
+[bans]
+multiple-versions = "deny"
+highlight = "all"
+skip = []
+
+# Mostly soundness denies since the advisory lacks a section for soundess bugs
+deny = [    
+    # This is basically Rust written like C.
+    { name = "sled", version = "*" },
+    
+    # The general idea seems unsound, and the current version does contain UB.
+    # https://github.com/Kimundi/owning-ref-rs/issues/71
+    { name = "owning_ref", version = "*" },
+    
+    # It's a crate only intended for testing; people insist on using it for some reason.
+    # https://crates.io/crates/markup5ever_rcdom/0.1.0
+    { name = "markup5ever_rcdom", version = "0.1.0" },
+    
+    # https://github.com/RustSec/advisory-db/issues/867
+    { name = "rusttype", version = "*" },
+    
+    # https://github.com/RustSec/advisory-db/issues/826
+    { name = "totally-safe-transmute", version = "*" },
+    
+    # https://github.com/RustSec/advisory-db/issues/743
+    { name = "fast-floats", version = "*" },
+    
+    # https://github.com/RustSec/advisory-db/issues/913
+    { name = "hexchat", version = ">=0.3.0" },
+    
+    # https://github.com/RustSec/advisory-db/issues/613
+    { name = "out-reference", version = "*" },
+    
+    # https://github.com/rustsec/advisory-db/issues/1175
+    { name = "futures-intrusive", version = "*" },
+    
+    # Probably abandoned. Commented as it is used by `tracing-subscriber`.
+    # https://github.com/rustsec/advisory-db/issues/1095
+    # { name = "ansi_term", version = "*" },
+    
+    # https://github.com/rustsec/advisory-db/issues/1173
+    { name = "prettytables-rs", version = "*" },
+    
+    # Makes cross-comp a pain. 
+    # This is commented out as cargo-deny does not seem to pick it up as disabled through features
+    # { name = "openssl", version = "*" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = [ "https://github.com/rust-lang/crates.io-index" ]
+allow-git = []
