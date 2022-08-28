@@ -30,11 +30,20 @@ mod tests {
     const IMAGE_PATH: &str = "./test_data/oZjCxGo.jpg";
 
     fn get_api_key() -> String {
-        std::fs::read_to_string("api_key.txt").expect("failed to get api key")
+        // Try env first
+        match std::env::var_os("SAUCE_NAO_API_KEY") {
+            Some(var) => var
+                .into_string()
+                .expect("`SAUCE_NAO_API_KEY` is not valid UTF-8"),
+            None => {
+                // Otherwise, try to load from the api_key.txt file.
+                // The file should contain only the api key as UTF-8.
+                std::fs::read_to_string("api_key.txt").expect("failed to load `api_key.txt`")
+            }
+        }
     }
 
     #[tokio::test]
-    #[ignore]
     async fn search_url_works() {
         let client = Client::new(&get_api_key());
         let results = client
@@ -45,7 +54,6 @@ mod tests {
     }
 
     #[tokio::test]
-    #[ignore]
     async fn search_file_works() {
         let image = Image::from_path(IMAGE_PATH.as_ref())
             .await
