@@ -93,31 +93,19 @@ pub struct SearchOptions {
     pub url: String,
 }
 
-fn main() {
+/// The entry point
+fn main() -> anyhow::Result<()> {
+    // This must be called first as if it fails, it will exit the program without running destructors.
     let options: Options = argh::from_env();
-    let code = match real_main(options) {
-        Ok(()) => 0,
-        Err(e) => {
-            eprintln!("{:?}", e);
-            1
-        }
-    };
-    std::process::exit(code);
-}
-
-fn real_main(options: Options) -> anyhow::Result<()> {
     let tokio_rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
         .context("failed to start tokio runtime")?;
-
     tokio_rt.block_on(async_main(options))?;
-
-    println!("Done.");
-
     Ok(())
 }
 
+/// The async entry point
 async fn async_main(options: Options) -> anyhow::Result<()> {
     let mut config = Config::load_async()
         .await
@@ -157,7 +145,7 @@ async fn async_main(options: Options) -> anyhow::Result<()> {
                 println!("{})", i + 1);
                 println!("Similarity: {}", result.header.similarity);
                 println!("Thumbnail: {}", result.header.thumbnail.as_str());
-                println!("Index name: {}", result.header.index_name.as_str());
+                println!("Index name: {}", result.header.index_name);
                 if !result.data.ext_urls.is_empty() {
                     println!("Ext Urls:");
 

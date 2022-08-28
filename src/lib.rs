@@ -55,7 +55,7 @@ mod tests {
             let results = client
                 .search(url)
                 .await
-                .expect(&format!("failed to search for `{url}`"));
+                .unwrap_or_else(|e| panic!("failed to search for `{url}`: {e}"));
             dbg!(results);
         }
     }
