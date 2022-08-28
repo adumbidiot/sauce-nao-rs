@@ -46,11 +46,18 @@ mod tests {
     #[tokio::test]
     async fn search_url_works() {
         let client = Client::new(&get_api_key());
-        let results = client
-            .search("https://i.imgur.com/oZjCxGo.jpg")
-            .await
-            .expect("failed to search");
-        dbg!(results);
+
+        let urls = [
+            "https://i.imgur.com/oZjCxGo.jpg",
+            "https://konachan.com/image/5982d8946ae503351e960f097f84cd90/Konachan.com%20-%20330136%20animal%20nobody%20original%20signed%20yutaka_kana.jpg",
+        ];
+        for url in urls {
+            let results = client
+                .search(url)
+                .await
+                .expect(&format!("failed to search for `{url}`"));
+            dbg!(results);
+        }
     }
 
     #[tokio::test]
