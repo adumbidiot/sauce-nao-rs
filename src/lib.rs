@@ -30,22 +30,37 @@ mod tests {
     const IMAGE_PATH: &str = "./test_data/oZjCxGo.jpg";
 
     fn get_api_key() -> String {
-        std::fs::read_to_string("api_key.txt").expect("failed to get api key")
+        // Try env first
+        match std::env::var_os("SAUCE_NAO_API_KEY") {
+            Some(var) => var
+                .into_string()
+                .expect("`SAUCE_NAO_API_KEY` is not valid UTF-8"),
+            None => {
+                // Otherwise, try to load from the api_key.txt file.
+                // The file should contain only the api key as UTF-8.
+                std::fs::read_to_string("api_key.txt").expect("failed to load `api_key.txt`")
+            }
+        }
     }
 
     #[tokio::test]
-    #[ignore]
     async fn search_url_works() {
         let client = Client::new(&get_api_key());
-        let results = client
-            .search("https://i.imgur.com/oZjCxGo.jpg")
-            .await
-            .expect("failed to search");
-        dbg!(results);
+
+        let urls = [
+            "https://i.imgur.com/oZjCxGo.jpg",
+            "https://konachan.com/image/5982d8946ae503351e960f097f84cd90/Konachan.com%20-%20330136%20animal%20nobody%20original%20signed%20yutaka_kana.jpg",
+        ];
+        for url in urls {
+            let results = client
+                .search(url)
+                .await
+                .unwrap_or_else(|e| panic!("failed to search for `{url}`: {e}"));
+            dbg!(results);
+        }
     }
 
     #[tokio::test]
-    #[ignore]
     async fn search_file_works() {
         let image = Image::from_path(IMAGE_PATH.as_ref())
             .await

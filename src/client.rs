@@ -45,6 +45,7 @@ impl Client {
             let form = reqwest::multipart::Form::new().part("file", part);
             res = res.multipart(form);
         }
-        Ok(res.send().await?.error_for_status()?.json().await?)
+        let json = res.send().await?.error_for_status()?.json().await?;
+        Ok(json)
     }
 }
