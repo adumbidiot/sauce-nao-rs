@@ -158,7 +158,7 @@ pub struct Data {
     pub author: Option<String>,
     /// md_id?
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub md_id: Option<u64>,
+    pub md_id: Option<Box<str>>,
 
     /// Extra K/Vs
     #[serde(flatten)]
