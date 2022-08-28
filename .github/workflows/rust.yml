@@ -54,6 +54,7 @@ jobs:
       - name: Build
         run: cargo build --verbose
 
-        
       - name: Run Tests
+        env:
+          SAUCE_NAO_API_KEY: ${{ secrets.SAUCE_NAO_API_KEY }}
         run: cargo test --all --verbose
