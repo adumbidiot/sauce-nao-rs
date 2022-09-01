@@ -17,7 +17,14 @@ impl Client {
     /// Create a new [`Client`].
     pub fn new(api_key: &str) -> Self {
         Self {
-            client: reqwest::Client::new(),
+            client: reqwest::Client::builder()
+                .user_agent(concat!(
+                    env!("CARGO_CRATE_NAME"),
+                    "/",
+                    env!("CARGO_PKG_VERSION")
+                ))
+                .build()
+                .expect("failed to build client"),
             api_key: Arc::from(api_key),
         }
     }
