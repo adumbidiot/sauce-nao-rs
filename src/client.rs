@@ -60,8 +60,6 @@ impl Client {
         }
         let json: SearchJson = response.json().await?;
 
-        dbg!(&json.header.payload.short_remaining);
-
         Ok(json)
     }
 }
