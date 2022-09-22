@@ -9,6 +9,7 @@ use url::Url;
 
 const DEFAULT_USER_AGENT_STR: &str =
     concat!(env!("CARGO_CRATE_NAME"), "/", env!("CARGO_PKG_VERSION"));
+const SEARCH_URL: &str = "https://saucenao.com/search.php";
 
 /// The sauce nao client
 #[derive(Debug, Clone)]
@@ -33,8 +34,8 @@ impl Client {
     pub async fn search(&self, image: impl Into<Image>) -> Result<SearchJson, Error> {
         let image = image.into();
         let mut url = Url::parse_with_params(
-            "https://saucenao.com/search.php?output_type=2",
-            &[("api_key", &*self.api_key)],
+            SEARCH_URL,
+            &[("output_type", "2"), ("api_key", &*self.api_key)],
         )?;
 
         let mut part = None;
@@ -57,7 +58,8 @@ impl Client {
             let json: ApiError = response.json().await?;
             return Err(Error::Api(json));
         }
-        let json = response.json().await?;
+        let json: SearchJson = response.json().await?;
+
         Ok(json)
     }
 }
