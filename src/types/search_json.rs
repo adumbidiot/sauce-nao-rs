@@ -15,20 +15,20 @@ pub struct SearchJson {
 
     /// Extra K/Vs
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
 /// Search json result header
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Header {
     /// user id?
-    pub user_id: String,
+    pub user_id: Box<str>,
     /// account type?
-    pub account_type: String,
+    pub account_type: Box<str>,
     /// Short limit?
-    pub short_limit: String,
+    pub short_limit: Box<str>,
     /// Long limit?
-    pub long_limit: String,
+    pub long_limit: Box<str>,
     /// long remaining?
     pub long_remaining: u64,
     /// short remaining
@@ -40,21 +40,21 @@ pub struct Header {
     /// This may be a string or a number
     pub results_requested: serde_json::Value,
     /// index?
-    pub index: HashMap<String, IndexEntry>,
+    pub index: HashMap<Box<str>, IndexEntry>,
     /// search depth?
-    pub search_depth: String,
+    pub search_depth: Box<str>,
     /// minimum similarity?
     pub minimum_similarity: f64,
     /// a path to the image maybe?
-    pub query_image_display: String,
+    pub query_image_display: Box<str>,
     /// the query image name
-    pub query_image: String,
+    pub query_image: Box<str>,
     /// the number of results returned
     pub results_returned: u64,
 
     /// Extra K/Vs
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
 /// An entry in the header index
