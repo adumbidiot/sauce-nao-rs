@@ -8,7 +8,10 @@ pub mod types;
 pub use self::{
     client::Client,
     image::Image,
-    types::SearchJson,
+    types::{
+        ApiError,
+        SearchJson,
+    },
 };
 
 /// The error type
@@ -21,6 +24,10 @@ pub enum Error {
     /// A URL parse error
     #[error("invalid url")]
     Url(#[from] url::ParseError),
+
+    /// An API Error Occured
+    #[error("api error ({})", .0.header.message)]
+    Api(self::types::ApiError),
 }
 
 #[cfg(test)]
