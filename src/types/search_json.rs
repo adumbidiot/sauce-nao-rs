@@ -2,13 +2,14 @@
 pub mod result_entry;
 
 pub use self::result_entry::ResultEntry;
+use crate::types::ApiResponseHeader;
 use std::collections::HashMap;
 
 /// A JSON search result
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct SearchJson {
     /// Header
-    pub header: Header,
+    pub header: ApiResponseHeader<HeaderPayload>,
 
     /// Results
     pub results: Vec<ResultEntry>,
@@ -20,21 +21,25 @@ pub struct SearchJson {
 
 /// Search json result header
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct Header {
+pub struct HeaderPayload {
     /// user id?
     pub user_id: Box<str>,
+
     /// account type?
     pub account_type: Box<str>,
+
     /// Short limit?
     pub short_limit: Box<str>,
+
     /// Long limit?
     pub long_limit: Box<str>,
+
     /// long remaining?
     pub long_remaining: u64,
+
     /// short remaining
     pub short_remaining: u64,
-    /// status?
-    pub status: u64,
+
     /// results requested?
     ///
     /// This may be a string or a number
@@ -49,7 +54,8 @@ pub struct Header {
     pub query_image_display: Box<str>,
     /// the query image name
     pub query_image: Box<str>,
-    /// the number of results returned
+
+    /// The number of results returned
     pub results_returned: u64,
 
     /// Extra K/Vs

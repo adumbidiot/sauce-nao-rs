@@ -4,27 +4,37 @@ pub mod search_json;
 pub use self::search_json::SearchJson;
 use std::collections::HashMap;
 
+/// The response header
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiResponseHeader<P> {
+    /// The status code
+    pub status: i32,
+
+    /// The header payload
+    ///
+    /// This contains specialized fields that are not sent for every api request.
+    #[serde(flatten)]
+    pub payload: P,
+}
+
 /// An API Error
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct ApiError {
-    /// Header?
-    pub header: ApiErrorHeader,
+    /// The response header
+    pub header: ApiResponseHeader<ApiErrorHeaderPayload>,
 
     /// Extra
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
-/// The API Error header
-#[derive(Debug, serde::Deserialize)]
-pub struct ApiErrorHeader {
+/// The payload of an api error header
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiErrorHeaderPayload {
     /// The message
     pub message: Box<str>,
 
-    /// The status
-    pub status: i32,
-
     /// Extra
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: HashMap<Box<str>, serde_json::Value>,
 }

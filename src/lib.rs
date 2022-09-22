@@ -26,7 +26,7 @@ pub enum Error {
     Url(#[from] url::ParseError),
 
     /// An API Error Occured
-    #[error("api error ({})", .0.header.message)]
+    #[error("api error ({})", .0.header.payload.message)]
     Api(self::types::ApiError),
 }
 
