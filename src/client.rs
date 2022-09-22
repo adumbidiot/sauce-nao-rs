@@ -58,7 +58,10 @@ impl Client {
             let json: ApiError = response.json().await?;
             return Err(Error::Api(json));
         }
-        let json = response.json().await?;
+        let json: SearchJson = response.json().await?;
+
+        dbg!(&json.header.payload.short_remaining);
+
         Ok(json)
     }
 }

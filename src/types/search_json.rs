@@ -3,7 +3,11 @@ pub mod result_entry;
 
 pub use self::result_entry::ResultEntry;
 use crate::types::ApiResponseHeader;
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    marker::PhantomData,
+    str::FromStr,
+};
 
 /// A JSON search result
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -28,11 +32,19 @@ pub struct HeaderPayload {
     /// account type?
     pub account_type: Box<str>,
 
-    /// Short limit?
-    pub short_limit: Box<str>,
+    /// The number of requests that can be made in the short limit.
+    ///
+    /// This is currently 4 for free accounts.
+    /// The short limit is currently 30 seconds.
+    #[serde(deserialize_with = "de_from_str", serialize_with = "ser_int_to_str")]
+    pub short_limit: u8,
 
-    /// Long limit?
-    pub long_limit: Box<str>,
+    /// The number of requests that can be made in the long limit.
+    ///
+    /// This is currently 100 for free accounts.
+    /// The long limit is currently 24 hours.
+    #[serde(deserialize_with = "de_from_str", serialize_with = "ser_int_to_str")]
+    pub long_limit: u8,
 
     /// long remaining?
     pub long_remaining: u64,
@@ -44,10 +56,13 @@ pub struct HeaderPayload {
     ///
     /// This may be a string or a number
     pub results_requested: serde_json::Value,
+
     /// index?
     pub index: HashMap<Box<str>, IndexEntry>,
+
     /// search depth?
     pub search_depth: Box<str>,
+
     /// minimum similarity?
     pub minimum_similarity: f64,
     /// a path to the image maybe?
@@ -78,6 +93,57 @@ pub struct IndexEntry {
     /// Extra K/Vs
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
+}
+
+fn de_from_str<'de, T, D>(deserializer: D) -> Result<T, D::Error>
+where
+    T: FromStr,
+    T::Err: std::fmt::Display,
+    D: serde::Deserializer<'de>,
+{
+    struct FromStrVisitor<T>(PhantomData<T>);
+
+    impl<'de, T> serde::de::Visitor<'de> for FromStrVisitor<T>
+    where
+        T: FromStr,
+        <T as std::str::FromStr>::Err: std::fmt::Display,
+    {
+        type Value = T;
+
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            write!(
+                formatter,
+                "a string that can be parsed into a {}",
+                std::any::type_name::<T>()
+            )
+        }
+
+        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error,
+        {
+            Self::Value::from_str(value).map_err(serde::de::Error::custom)
+        }
+
+        fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error,
+        {
+            Self::Value::from_str(&value).map_err(serde::de::Error::custom)
+        }
+    }
+
+    deserializer.deserialize_str(FromStrVisitor(PhantomData))
+}
+
+fn ser_int_to_str<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+where
+    T: itoa::Integer,
+    S: serde::Serializer,
+{
+    let mut buffer = itoa::Buffer::new();
+    let value = buffer.format(*value);
+    serializer.serialize_str(value)
 }
 
 #[cfg(test)]

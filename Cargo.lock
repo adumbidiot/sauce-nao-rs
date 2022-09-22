@@ -697,6 +697,7 @@ dependencies = [
  "anyhow",
  "argh",
  "dirs-next",
+ "itoa",
  "reqwest",
  "serde",
  "serde_json",
