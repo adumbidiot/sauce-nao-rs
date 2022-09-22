@@ -46,10 +46,14 @@ pub struct HeaderPayload {
     #[serde(deserialize_with = "de_from_str", serialize_with = "ser_int_to_str")]
     pub long_limit: u8,
 
-    /// long remaining?
+    /// The number of request remaining for the long period.
+    ///
+    /// The long period is currently 24 hours.
     pub long_remaining: u64,
 
-    /// short remaining
+    /// The minimum of the number of remaining requests for the short and long periods.
+    ///
+    /// The short period is currently 30 seconds.
     pub short_remaining: u64,
 
     /// results requested?
@@ -65,8 +69,10 @@ pub struct HeaderPayload {
 
     /// minimum similarity?
     pub minimum_similarity: f64,
+
     /// a path to the image maybe?
     pub query_image_display: Box<str>,
+
     /// the query image name
     pub query_image: Box<str>,
 
