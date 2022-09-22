@@ -1,10 +1,14 @@
 use crate::{
+    ApiError,
     Error,
     Image,
     SearchJson,
 };
 use std::sync::Arc;
 use url::Url;
+
+const DEFAULT_USER_AGENT_STR: &str =
+    concat!(env!("CARGO_CRATE_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
 /// The sauce nao client
 #[derive(Debug, Clone)]
@@ -18,13 +22,9 @@ impl Client {
     pub fn new(api_key: &str) -> Self {
         Self {
             client: reqwest::Client::builder()
-                .user_agent(concat!(
-                    env!("CARGO_CRATE_NAME"),
-                    "/",
-                    env!("CARGO_PKG_VERSION")
-                ))
+                .user_agent(DEFAULT_USER_AGENT_STR)
                 .build()
-                .expect("failed to build client"),
+                .expect("failed to build saucenao client"),
             api_key: Arc::from(api_key),
         }
     }
@@ -47,12 +47,17 @@ impl Client {
             }
         }
 
-        let mut res = self.client.post(url.as_str());
+        let mut request = self.client.post(url.as_str());
         if let Some(part) = part {
             let form = reqwest::multipart::Form::new().part("file", part);
-            res = res.multipart(form);
+            request = request.multipart(form);
         }
-        let json = res.send().await?.error_for_status()?.json().await?;
+        let response = request.send().await?;
+        if !response.status().is_success() {
+            let json: ApiError = response.json().await?;
+            return Err(Error::Api(json));
+        }
+        let json = response.json().await?;
         Ok(json)
     }
 }
