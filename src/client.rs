@@ -14,7 +14,12 @@ const SEARCH_URL: &str = "https://saucenao.com/search.php";
 /// The sauce nao client
 #[derive(Debug, Clone)]
 pub struct Client {
-    client: reqwest::Client,
+    /// The inner http client.
+    ///
+    /// This generally should not be used directly.
+    pub client: reqwest::Client,
+    
+    
     api_key: Arc<str>,
 }
 
