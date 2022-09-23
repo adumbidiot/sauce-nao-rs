@@ -26,8 +26,8 @@ pub enum Error {
     Url(#[from] url::ParseError),
 
     /// An API Error Occured
-    #[error("api error ({})", .0.header.payload.message)]
-    Api(self::types::ApiError),
+    #[error("api error")]
+    Api(#[from] self::types::ApiError),
 }
 
 #[cfg(test)]
@@ -75,5 +75,18 @@ mod tests {
         let client = Client::new(&get_api_key());
         let results = client.search(image).await.expect("failed to search");
         dbg!(results);
+    }
+
+    #[tokio::test]
+    async fn invalid_client_fails() {
+        let image = Image::from_path(IMAGE_PATH.as_ref())
+            .await
+            .expect("failed to open image");
+        let client = Client::new("");
+        let err = client
+            .search(image)
+            .await
+            .expect_err("anonymous searching should fail");
+        assert!(matches!(err, Error::Api(ApiError { .. })));
     }
 }
