@@ -14,7 +14,11 @@ const SEARCH_URL: &str = "https://saucenao.com/search.php";
 /// The sauce nao client
 #[derive(Debug, Clone)]
 pub struct Client {
-    client: reqwest::Client,
+    /// The inner http client.
+    ///
+    /// This generally should not be used directly.
+    pub client: reqwest::Client,
+
     api_key: Arc<str>,
 }
 
@@ -54,12 +58,15 @@ impl Client {
             request = request.multipart(form);
         }
         let response = request.send().await?;
+
+        // Instead of just returning a status code error,
+        // parse the error response to give better feedback.
         if !response.status().is_success() {
             let json: ApiError = response.json().await?;
             return Err(Error::Api(json));
         }
-        let json: SearchJson = response.json().await?;
 
+        let json: SearchJson = response.json().await?;
         Ok(json)
     }
 }

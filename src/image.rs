@@ -1,6 +1,3 @@
-//! Copied from `iqdb`
-//! Try to keep this file in sync.
-
 use reqwest::Body;
 use std::{
     borrow::Cow,

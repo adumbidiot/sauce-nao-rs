@@ -28,6 +28,18 @@ pub struct ApiError {
     pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
+impl std::fmt::Display for ApiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} (status={})",
+            self.header.payload.message, self.header.status
+        )
+    }
+}
+
+impl std::error::Error for ApiError {}
+
 /// The payload of an api error header
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct ApiErrorHeaderPayload {
