@@ -8,10 +8,7 @@ pub mod types;
 pub use self::{
     client::Client,
     image::Image,
-    types::{
-        ApiError,
-        SearchJson,
-    },
+    types::{ApiError, SearchJson},
 };
 
 /// The error type

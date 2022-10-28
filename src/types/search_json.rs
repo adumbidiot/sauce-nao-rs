@@ -3,11 +3,7 @@ pub mod result_entry;
 
 pub use self::result_entry::ResultEntry;
 use crate::types::ApiResponseHeader;
-use std::{
-    collections::HashMap,
-    marker::PhantomData,
-    str::FromStr,
-};
+use std::{collections::HashMap, marker::PhantomData, str::FromStr};
 
 /// A JSON search result
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
