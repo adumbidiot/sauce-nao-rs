@@ -14,6 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
@@ -37,7 +48,7 @@ jobs:
           command: clippy
           args: '--tests --all --all-features -- -D warnings'
           
-  cargo-deny:
+  Deny:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,11 +56,22 @@ jobs:
       - name: Deny
         uses: EmbarkStudios/cargo-deny-action@v1
         
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         
       - name: Build
         run: cargo build --verbose
