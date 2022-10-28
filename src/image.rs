@@ -1,12 +1,6 @@
 use reqwest::Body;
-use std::{
-    borrow::Cow,
-    path::Path,
-};
-use tokio_util::codec::{
-    BytesCodec,
-    FramedRead,
-};
+use std::{borrow::Cow, path::Path};
+use tokio_util::codec::{BytesCodec, FramedRead};
 
 /// An Image
 pub enum Image {

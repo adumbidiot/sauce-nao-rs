@@ -1,9 +1,4 @@
-use crate::{
-    ApiError,
-    Error,
-    Image,
-    SearchJson,
-};
+use crate::{ApiError, Error, Image, SearchJson};
 use std::sync::Arc;
 use url::Url;
 
