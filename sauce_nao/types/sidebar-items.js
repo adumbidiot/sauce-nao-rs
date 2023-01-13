@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["search_json","[`SearchJson`] types"]],"struct":[["ApiError","An API Error"],["ApiErrorHeaderPayload","The payload of an api error header"],["ApiResponseHeader","The response header"]]};

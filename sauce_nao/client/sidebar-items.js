@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Client","The sauce nao client"]]};

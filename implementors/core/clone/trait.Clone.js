@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"sauce_nao":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.66.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"sauce_nao/client/struct.Client.html\" title=\"struct sauce_nao::client::Client\">Client</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

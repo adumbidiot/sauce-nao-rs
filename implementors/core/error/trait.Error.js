@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"sauce_nao":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.66.0/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"struct\" href=\"sauce_nao/types/struct.ApiError.html\" title=\"struct sauce_nao::types::ApiError\">ApiError</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.66.0/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"sauce_nao/enum.Error.html\" title=\"enum sauce_nao::Error\">Error</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

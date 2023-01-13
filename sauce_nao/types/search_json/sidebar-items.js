@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["result_entry","[`ResultEntry`] types"]],"struct":[["HeaderPayload","Search json result header"],["IndexEntry","An entry in the header index"],["SearchJson","A JSON search result"]]};
