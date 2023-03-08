@@ -12,7 +12,7 @@ required-features = [ "cli" ]
 [dependencies]
 itoa = "1.0.5"
 reqwest = { version = "0.11.13", default-features = false, features = [ "json", "stream", "multipart" ] }
-serde = { version = "1.0.152", features = [ "derive" ] }
+serde = { version = "1.0.153", features = [ "derive" ] }
 serde_json = "1.0.93"
 thiserror = "1.0.38"
 tokio = { version = "1.26.0", features = [ "fs" ] }
