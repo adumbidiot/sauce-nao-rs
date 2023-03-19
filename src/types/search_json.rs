@@ -162,7 +162,7 @@ mod test {
 
         for result in res.results.iter() {
             for extra in result.data.extra.iter() {
-                panic!("unknown data: {:#?}", extra);
+                panic!("unknown data: {extra:#?}");
             }
         }
     }
@@ -174,7 +174,7 @@ mod test {
 
         for result in res.results.iter() {
             for extra in result.data.extra.iter() {
-                panic!("unknown data: {:#?}", extra);
+                panic!("unknown data: {extra:#?}");
             }
         }
     }

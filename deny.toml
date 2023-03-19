@@ -50,8 +50,8 @@ license-files = [
 multiple-versions = "deny"
 highlight = "all"
 skip = [
-    { name = "windows-sys", version = "0.36.1" },
-    { name = "windows_x86_64_msvc", version = "0.36.1" },
+    { name = "windows-sys", version = "0.42.0" },
+    { name = "syn", version = "1.0.109" },
 ]
 
 # Mostly soundness denies since the advisory lacks a section for soundess bugs
