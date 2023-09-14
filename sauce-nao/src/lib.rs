@@ -9,6 +9,7 @@ pub use self::client::Client;
 pub use self::image::Image;
 pub use self::types::ApiResponse;
 pub use self::types::ErrorResponse;
+pub use self::types::OkResponse;
 pub use self::types::ResultEntry;
 
 /// The error type
@@ -84,7 +85,6 @@ mod tests {
             .search(image)
             .await
             .expect_err("anonymous searching should fail");
-        dbg!(err);
-        // assert!(matches!(err, Error::Api(ApiError { .. })));
+        assert!(matches!(err, Error::Api(_)));
     }
 }

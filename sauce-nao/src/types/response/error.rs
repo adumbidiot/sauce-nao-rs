@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 
 /// A error
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug)]
 pub struct ErrorResponse {
     /// The header
     pub header: ErrorResponseHeader,
+
+    /// Extra K/Vs
+    pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
 /// A client side error header

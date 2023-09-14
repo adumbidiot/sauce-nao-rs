@@ -73,11 +73,23 @@ impl<'de> serde::Deserialize<'de> for ApiResponse {
             Ok(Self::Ok(OkResponse {
                 header: serde_json::from_value(header).map_err(D::Error::custom)?,
                 results: serde_json::from_value(results).map_err(D::Error::custom)?,
+                extra: value,
             }))
         } else {
             Ok(Self::Error(ErrorResponse {
                 header: serde_json::from_value(header).map_err(D::Error::custom)?,
+                extra: value,
             }))
+        }
+    }
+}
+
+impl ApiResponse {
+    /// Transform this into a `Result`.
+    pub fn into_result(self) -> Result<OkResponse, ErrorResponse> {
+        match self {
+            Self::Ok(response) => Ok(response),
+            Self::Error(response) => Err(response),
         }
     }
 }

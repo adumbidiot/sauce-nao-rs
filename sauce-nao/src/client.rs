@@ -1,6 +1,7 @@
 use crate::ApiResponse;
 use crate::Error;
 use crate::Image;
+use crate::OkResponse;
 use std::sync::Arc;
 use url::Url;
 
@@ -32,7 +33,7 @@ impl Client {
     }
 
     /// Look up an image
-    pub async fn search(&self, image: impl Into<Image>) -> Result<ApiResponse, Error> {
+    pub async fn search(&self, image: impl Into<Image>) -> Result<OkResponse, Error> {
         let image = image.into();
         let mut url = Url::parse_with_params(
             SEARCH_URL,
@@ -56,16 +57,11 @@ impl Client {
         }
         let response = request.send().await?;
 
-        // let status = response.status();
-
-        /*
-        if !status.is_success() {
-            let json: ApiError = response.json().await?;
-            return Err(Error::Api(json));
-        }
-        */
+        // Don't check for status,
+        // we trust the internal api response status code more.
 
         let response: ApiResponse = response.json().await?;
-        Ok(response)
+
+        Ok(response.into_result()?)
     }
 }

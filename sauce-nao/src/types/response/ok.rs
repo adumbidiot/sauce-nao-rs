@@ -14,6 +14,9 @@ pub struct OkResponse {
 
     /// Results
     pub results: Vec<ResultEntry>,
+
+    /// Extra K/Vs
+    pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
 /// The Ok Response Header
