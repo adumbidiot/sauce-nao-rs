@@ -841,6 +841,7 @@ dependencies = [
  "anyhow",
  "argh",
  "dirs-next",
+ "reqwest",
  "sauce-nao",
  "serde",
  "tokio",

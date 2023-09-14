@@ -1,5 +1,7 @@
 use anyhow::Context;
+use reqwest::Url;
 use sauce_nao::Creator;
+use sauce_nao::Image;
 
 /// User config
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -82,7 +84,7 @@ pub struct LoginOptions {
     pub api_key: Option<String>,
 }
 
-#[derive(argh::FromArgs)]
+#[derive(argh::FromArgs, Debug)]
 #[argh(
     subcommand,
     name = "search",
@@ -91,6 +93,13 @@ pub struct LoginOptions {
 pub struct SearchOptions {
     #[argh(positional, description = "the image url or path")]
     pub url: String,
+
+    #[argh(
+        switch,
+        long = "proxy-file",
+        description = "whether to download the given url and upload as a file"
+    )]
+    pub proxy_file: bool,
 }
 
 /// The entry point
@@ -126,10 +135,37 @@ async fn async_main(options: Options) -> anyhow::Result<()> {
             let client = sauce_nao::Client::new(api_key);
 
             let image = if options.url.starts_with("http") {
-                sauce_nao::Image::from(options.url.as_str())
+                if !options.proxy_file {
+                    Image::from(options.url.as_str())
+                } else {
+                    let maybe_url = Url::parse(&options.url);
+                    let file_name = maybe_url
+                        .as_ref()
+                        .ok()
+                        .and_then(|url| url.path_segments()?.next_back()?.split('.').next())
+                        .unwrap_or("file.png");
+
+                    eprintln!("Proxying image...");
+                    let response = async {
+                        client
+                            .client
+                            .get(options.url.as_str())
+                            .send()
+                            .await?
+                            .error_for_status()
+                    }
+                    .await
+                    .with_context(|| format!("failed to send request to \"{}\"", options.url))?;
+                    let body = reqwest::Body::wrap_stream(response.bytes_stream());
+
+                    Image::File {
+                        name: file_name.into(),
+                        body,
+                    }
+                }
             } else {
                 eprintln!("Loading image...");
-                sauce_nao::Image::from_path(options.url.as_ref())
+                Image::from_path(options.url.as_ref())
                     .await
                     .context("failed to load image")?
             };
