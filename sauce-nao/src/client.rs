@@ -1,5 +1,9 @@
-use crate::{ApiError, Error, Image, SearchJson};
+use crate::ApiResponse;
+use crate::Error;
+use crate::Image;
+use crate::OkResponse;
 use std::sync::Arc;
+use std::time::Duration;
 use url::Url;
 
 const DEFAULT_USER_AGENT_STR: &str =
@@ -23,6 +27,7 @@ impl Client {
         Self {
             client: reqwest::Client::builder()
                 .user_agent(DEFAULT_USER_AGENT_STR)
+                .connect_timeout(Duration::from_secs(10))
                 .build()
                 .expect("failed to build saucenao client"),
             api_key: Arc::from(api_key),
@@ -30,7 +35,7 @@ impl Client {
     }
 
     /// Look up an image
-    pub async fn search(&self, image: impl Into<Image>) -> Result<SearchJson, Error> {
+    pub async fn search(&self, image: impl Into<Image>) -> Result<OkResponse, Error> {
         let image = image.into();
         let mut url = Url::parse_with_params(
             SEARCH_URL,
@@ -54,14 +59,11 @@ impl Client {
         }
         let response = request.send().await?;
 
-        // Instead of just returning a status code error,
-        // parse the error response to give better feedback.
-        if !response.status().is_success() {
-            let json: ApiError = response.json().await?;
-            return Err(Error::Api(json));
-        }
+        // Don't check for status,
+        // we trust the internal api response status code more.
 
-        let json: SearchJson = response.json().await?;
-        Ok(json)
+        let response: ApiResponse = response.json().await?;
+
+        Ok(response.into_result()?)
     }
 }

@@ -1,15 +1,17 @@
 /// Client type
-pub mod client;
+mod client;
 /// Image type
-pub mod image;
+mod image;
 /// Api types
-pub mod types;
+mod types;
 
-pub use self::{
-    client::Client,
-    image::Image,
-    types::{ApiError, SearchJson},
-};
+pub use self::client::Client;
+pub use self::image::Image;
+pub use self::types::ApiResponse;
+pub use self::types::Creator;
+pub use self::types::ErrorResponse;
+pub use self::types::OkResponse;
+pub use self::types::ResultEntry;
 
 /// The error type
 #[derive(Debug, thiserror::Error)]
@@ -24,7 +26,7 @@ pub enum Error {
 
     /// An API Error Occured
     #[error("api error")]
-    Api(#[from] self::types::ApiError),
+    Api(#[from] self::ErrorResponse),
 }
 
 #[cfg(test)]
@@ -59,7 +61,7 @@ mod tests {
             let results = client
                 .search(url)
                 .await
-                .unwrap_or_else(|e| panic!("failed to search for `{url}`: {e}"));
+                .unwrap_or_else(|error| panic!("failed to search for `{url}`: {error:?}"));
             dbg!(results);
         }
     }
@@ -84,6 +86,6 @@ mod tests {
             .search(image)
             .await
             .expect_err("anonymous searching should fail");
-        assert!(matches!(err, Error::Api(ApiError { .. })));
+        assert!(matches!(err, Error::Api(_)));
     }
 }

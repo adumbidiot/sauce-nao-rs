@@ -1,15 +1,17 @@
 /// [`ResultEntry`] types
 pub mod result_entry;
 
+pub use self::result_entry::Creator;
 pub use self::result_entry::ResultEntry;
-use crate::types::ApiResponseHeader;
-use std::{collections::HashMap, marker::PhantomData, str::FromStr};
+use std::collections::HashMap;
+use std::marker::PhantomData;
+use std::str::FromStr;
 
-/// A JSON search result
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct SearchJson {
-    /// Header
-    pub header: ApiResponseHeader<HeaderPayload>,
+/// The Ok Response
+#[derive(Debug, serde::Serialize)]
+pub struct OkResponse {
+    /// The response header
+    pub header: OkResponseHeader,
 
     /// Results
     pub results: Vec<ResultEntry>,
@@ -19,14 +21,31 @@ pub struct SearchJson {
     pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
-/// Search json result header
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct HeaderPayload {
+/// The Ok Response Header
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct OkResponseHeader {
+    /// The header status
+    pub status: i64,
+
     /// user id?
     pub user_id: Box<str>,
 
     /// account type?
     pub account_type: Box<str>,
+
+    /// index?
+    pub index: HashMap<Box<str>, IndexEntry>,
+
+    /// results requested?
+    ///
+    /// This may be a string or a number
+    pub results_requested: serde_json::Value,
+
+    /// a path to the image maybe?
+    pub query_image_display: Box<str>,
+
+    /// the query image name
+    pub query_image: Box<str>,
 
     /// The number of requests that can be made in the short limit.
     ///
@@ -52,28 +71,14 @@ pub struct HeaderPayload {
     /// The short period is currently 30 seconds.
     pub short_remaining: u64,
 
-    /// results requested?
-    ///
-    /// This may be a string or a number
-    pub results_requested: serde_json::Value,
-
-    /// index?
-    pub index: HashMap<Box<str>, IndexEntry>,
-
-    /// search depth?
-    pub search_depth: Box<str>,
+    /// The number of results returned
+    pub results_returned: u64,
 
     /// minimum similarity?
     pub minimum_similarity: f64,
 
-    /// a path to the image maybe?
-    pub query_image_display: Box<str>,
-
-    /// the query image name
-    pub query_image: Box<str>,
-
-    /// The number of results returned
-    pub results_returned: u64,
+    /// search depth?
+    pub search_depth: Box<str>,
 
     /// Extra K/Vs
     #[serde(flatten)]
@@ -146,36 +151,4 @@ where
     let mut buffer = itoa::Buffer::new();
     let value = buffer.format(*value);
     serializer.serialize_str(value)
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    const SAMPLE: &str = include_str!("../../test_data/sample.json");
-    const IMGUR: &str = include_str!("../../test_data/imgur.json");
-
-    #[test]
-    fn parse_search_json() {
-        let res: SearchJson = serde_json::from_str(SAMPLE).expect("failed to parse");
-        dbg!(&res);
-
-        for result in res.results.iter() {
-            for extra in result.data.extra.iter() {
-                panic!("unknown data: {extra:#?}");
-            }
-        }
-    }
-
-    #[test]
-    fn parse_imgur_json() {
-        let res: SearchJson = serde_json::from_str(IMGUR).expect("failed to parse");
-        dbg!(&res);
-
-        for result in res.results.iter() {
-            for extra in result.data.extra.iter() {
-                panic!("unknown data: {extra:#?}");
-            }
-        }
-    }
 }

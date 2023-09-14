@@ -1,5 +1,30 @@
+use anyhow::bail;
 use anyhow::Context;
-use sauce_nao::types::search_json::result_entry::Creator;
+use reqwest::Url;
+use sauce_nao::Creator;
+use sauce_nao::Image;
+use std::str::FromStr;
+
+/// The output format
+#[derive(Debug, Default)]
+pub enum OutputFormat {
+    #[default]
+    Human,
+
+    Json,
+}
+
+impl FromStr for OutputFormat {
+    type Err = anyhow::Error;
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        match input {
+            "human" => Ok(Self::Human),
+            "json" => Ok(Self::Json),
+            input => bail!("unknown output format \"{input}\""),
+        }
+    }
+}
 
 /// User config
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -82,7 +107,7 @@ pub struct LoginOptions {
     pub api_key: Option<String>,
 }
 
-#[derive(argh::FromArgs)]
+#[derive(argh::FromArgs, Debug)]
 #[argh(
     subcommand,
     name = "search",
@@ -91,6 +116,21 @@ pub struct LoginOptions {
 pub struct SearchOptions {
     #[argh(positional, description = "the image url or path")]
     pub url: String,
+
+    #[argh(
+        option,
+        long = "output-format",
+        description = "the output format",
+        default = "Default::default()"
+    )]
+    pub output_format: OutputFormat,
+
+    #[argh(
+        switch,
+        long = "proxy-file",
+        description = "whether to download the given url and upload as a file"
+    )]
+    pub proxy_file: bool,
 }
 
 /// The entry point
@@ -126,10 +166,37 @@ async fn async_main(options: Options) -> anyhow::Result<()> {
             let client = sauce_nao::Client::new(api_key);
 
             let image = if options.url.starts_with("http") {
-                sauce_nao::Image::from(options.url.as_str())
+                if !options.proxy_file {
+                    Image::from(options.url.as_str())
+                } else {
+                    let maybe_url = Url::parse(&options.url);
+                    let file_name = maybe_url
+                        .as_ref()
+                        .ok()
+                        .and_then(|url| url.path_segments()?.next_back()?.split('.').next())
+                        .unwrap_or("file.png");
+
+                    eprintln!("Proxying image...");
+                    let response = async {
+                        client
+                            .client
+                            .get(options.url.as_str())
+                            .send()
+                            .await?
+                            .error_for_status()
+                    }
+                    .await
+                    .with_context(|| format!("failed to send request to \"{}\"", options.url))?;
+                    let body = reqwest::Body::wrap_stream(response.bytes_stream());
+
+                    Image::File {
+                        name: file_name.into(),
+                        body,
+                    }
+                }
             } else {
                 eprintln!("Loading image...");
-                sauce_nao::Image::from_path(options.url.as_ref())
+                Image::from_path(options.url.as_ref())
                     .await
                     .context("failed to load image")?
             };
@@ -137,42 +204,52 @@ async fn async_main(options: Options) -> anyhow::Result<()> {
             eprintln!("Searching...");
             let results = client.search(image).await.context("failed to search")?;
 
-            println!();
-            println!("Results for search: ");
-            println!();
+            match options.output_format {
+                OutputFormat::Human => {
+                    println!();
+                    println!("Results for search: ");
+                    println!();
 
-            for (i, result) in results.results.iter().enumerate() {
-                println!("{})", i + 1);
-                println!("Similarity: {}", result.header.similarity);
-                println!("Thumbnail: {}", result.header.thumbnail.as_str());
-                println!("Index name: {}", result.header.index_name);
-                if !result.data.ext_urls.is_empty() {
-                    println!("Ext Urls:");
+                    for (i, result) in results.results.iter().enumerate() {
+                        println!("{})", i + 1);
+                        println!("Similarity: {}", result.header.similarity);
+                        println!("Thumbnail: {}", result.header.thumbnail.as_str());
+                        println!("Index name: {}", result.header.index_name);
+                        if !result.data.ext_urls.is_empty() {
+                            println!("Ext Urls:");
 
-                    for url in result.data.ext_urls.iter() {
-                        println!("    {}", url.as_str());
-                    }
-                }
-                if let Some(author_name) = result.data.author_name.as_deref() {
-                    println!("Author Name: {}", author_name);
-                }
-                if let Some(creator) = result.data.creator.as_ref() {
-                    match creator {
-                        Creator::Single(creator) => {
-                            println!("Creator: {}", creator);
-                        }
-                        Creator::Multiple(creators) => {
-                            println!("Creators: ");
-                            for creator in creators.iter() {
-                                println!("    {}", creator);
+                            for url in result.data.ext_urls.iter() {
+                                println!("    {}", url.as_str());
                             }
                         }
+                        if let Some(author_name) = result.data.author_name.as_deref() {
+                            println!("Author Name: {}", author_name);
+                        }
+                        if let Some(creator) = result.data.creator.as_ref() {
+                            match creator {
+                                Creator::Single(creator) => {
+                                    println!("Creator: {}", creator);
+                                }
+                                Creator::Multiple(creators) => {
+                                    println!("Creators: ");
+                                    for creator in creators.iter() {
+                                        println!("    {}", creator);
+                                    }
+                                }
+                            }
+                        }
+                        if let Some(member_name) = result.data.member_name.as_deref() {
+                            println!("Member Name: {}", member_name);
+                        }
+                        println!();
                     }
                 }
-                if let Some(member_name) = result.data.member_name.as_deref() {
-                    println!("Member Name: {}", member_name);
+                OutputFormat::Json => {
+                    let stdout = std::io::stdout();
+                    let stdout = stdout.lock();
+
+                    serde_json::to_writer(stdout, &results)?;
                 }
-                println!();
             }
         }
     }

@@ -1,0 +1,16 @@
+[package]
+name = "sauce-nao-cli"
+version = "0.0.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+anyhow = "1.0.75"
+argh = "0.1.12"
+dirs-next = "2.0.0"
+reqwest = { version = "0.11.20", default-features = false }
+sauce-nao = { path = "../sauce-nao" }
+serde = { version = "1.0.188", features = [ "derive" ] }
+serde_json = "1.0.107"
+tokio = { version = "1.32.0", features = [ "rt-multi-thread" ] }
+toml = "0.8.0"
