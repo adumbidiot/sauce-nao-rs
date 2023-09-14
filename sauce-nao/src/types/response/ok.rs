@@ -1,3 +1,7 @@
+/// [`ResultEntry`] types
+pub mod result_entry;
+
+pub use self::result_entry::ResultEntry;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::str::FromStr;
@@ -7,6 +11,9 @@ use std::str::FromStr;
 pub struct OkResponse {
     /// The response header
     pub header: OkResponseHeader,
+
+    /// Results
+    pub results: Vec<ResultEntry>,
 }
 
 /// The Ok Response Header

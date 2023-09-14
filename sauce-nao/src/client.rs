@@ -1,4 +1,6 @@
-use crate::{ApiError, Error, Image, SearchJson};
+use crate::ApiResponse;
+use crate::Error;
+use crate::Image;
 use std::sync::Arc;
 use url::Url;
 
@@ -30,7 +32,7 @@ impl Client {
     }
 
     /// Look up an image
-    pub async fn search(&self, image: impl Into<Image>) -> Result<SearchJson, Error> {
+    pub async fn search(&self, image: impl Into<Image>) -> Result<ApiResponse, Error> {
         let image = image.into();
         let mut url = Url::parse_with_params(
             SEARCH_URL,
@@ -54,14 +56,16 @@ impl Client {
         }
         let response = request.send().await?;
 
-        // Instead of just returning a status code error,
-        // parse the error response to give better feedback.
-        if !response.status().is_success() {
+        // let status = response.status();
+
+        /*
+        if !status.is_success() {
             let json: ApiError = response.json().await?;
             return Err(Error::Api(json));
         }
+        */
 
-        let json: SearchJson = response.json().await?;
-        Ok(json)
+        let response: ApiResponse = response.json().await?;
+        Ok(response)
     }
 }

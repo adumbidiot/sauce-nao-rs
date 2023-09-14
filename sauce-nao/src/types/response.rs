@@ -3,6 +3,7 @@ mod ok;
 pub use self::ok::IndexEntry;
 pub use self::ok::OkResponse;
 pub use self::ok::OkResponseHeader;
+pub use self::ok::ResultEntry;
 
 /// An Api Response
 #[derive(Debug)]
@@ -60,6 +61,7 @@ impl<'de> serde::Deserialize<'de> for ApiResponse {
         match status {
             0 => Ok(Self::Ok(OkResponse {
                 header: serde_json::from_value(header).map_err(D::Error::custom)?,
+                results: Vec::new(),
             })),
             status => Err(D::Error::custom(format_args!(
                 "unknown header status {status}"
