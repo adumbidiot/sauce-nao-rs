@@ -844,6 +844,7 @@ dependencies = [
  "reqwest",
  "sauce-nao",
  "serde",
+ "serde_json",
  "tokio",
  "toml",
 ]

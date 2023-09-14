@@ -8,7 +8,7 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 
 /// The Ok Response
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct OkResponse {
     /// The response header
     pub header: OkResponseHeader,
@@ -17,6 +17,7 @@ pub struct OkResponse {
     pub results: Vec<ResultEntry>,
 
     /// Extra K/Vs
+    #[serde(flatten)]
     pub extra: HashMap<Box<str>, serde_json::Value>,
 }
 
