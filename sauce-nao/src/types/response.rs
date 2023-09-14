@@ -4,6 +4,7 @@ pub use self::ok::IndexEntry;
 pub use self::ok::OkResponse;
 pub use self::ok::OkResponseHeader;
 pub use self::ok::ResultEntry;
+use std::collections::HashMap;
 
 /// An Api Response
 #[derive(Debug)]
@@ -21,12 +22,11 @@ impl<'de> serde::Deserialize<'de> for ApiResponse {
         use serde::de::Unexpected;
         use serde_json::Value;
 
-        let mut value = Value::deserialize(deserializer)?;
+        let mut value = HashMap::<Box<str>, serde_json::Value>::deserialize(deserializer)?;
 
         let header = value
-            .get_mut("header")
-            .ok_or(D::Error::missing_field("header"))?
-            .take();
+            .remove("header")
+            .ok_or(D::Error::missing_field("header"))?;
         let status = header
             .get("status")
             .ok_or(D::Error::missing_field("header.status"))?;
@@ -59,10 +59,17 @@ impl<'de> serde::Deserialize<'de> for ApiResponse {
         })?;
 
         match status {
-            0 => Ok(Self::Ok(OkResponse {
-                header: serde_json::from_value(header).map_err(D::Error::custom)?,
-                results: Vec::new(),
-            })),
+            0 => {
+                let results = value
+                    .remove("results")
+                    .ok_or(D::Error::missing_field("results"))?
+                    .take();
+
+                Ok(Self::Ok(OkResponse {
+                    header: serde_json::from_value(header).map_err(D::Error::custom)?,
+                    results: serde_json::from_value(results).map_err(D::Error::custom)?,
+                }))
+            }
             status => Err(D::Error::custom(format_args!(
                 "unknown header status {status}"
             ))),
