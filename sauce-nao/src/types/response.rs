@@ -1,5 +1,8 @@
+mod error;
 mod ok;
 
+pub use self::error::ErrorResponse;
+pub use self::error::ErrorResponseHeader;
 pub use self::ok::IndexEntry;
 pub use self::ok::OkResponse;
 pub use self::ok::OkResponseHeader;
@@ -11,6 +14,9 @@ use std::collections::HashMap;
 pub enum ApiResponse {
     /// The normal response
     Ok(OkResponse),
+
+    /// There was a client-side error
+    Error(ErrorResponse),
 }
 
 impl<'de> serde::Deserialize<'de> for ApiResponse {
@@ -58,21 +64,20 @@ impl<'de> serde::Deserialize<'de> for ApiResponse {
             )
         })?;
 
-        match status {
-            0 => {
-                let results = value
-                    .remove("results")
-                    .ok_or(D::Error::missing_field("results"))?
-                    .take();
+        if status == 0 {
+            let results = value
+                .remove("results")
+                .ok_or(D::Error::missing_field("results"))?
+                .take();
 
-                Ok(Self::Ok(OkResponse {
-                    header: serde_json::from_value(header).map_err(D::Error::custom)?,
-                    results: serde_json::from_value(results).map_err(D::Error::custom)?,
-                }))
-            }
-            status => Err(D::Error::custom(format_args!(
-                "unknown header status {status}"
-            ))),
+            Ok(Self::Ok(OkResponse {
+                header: serde_json::from_value(header).map_err(D::Error::custom)?,
+                results: serde_json::from_value(results).map_err(D::Error::custom)?,
+            }))
+        } else {
+            Ok(Self::Error(ErrorResponse {
+                header: serde_json::from_value(header).map_err(D::Error::custom)?,
+            }))
         }
     }
 }

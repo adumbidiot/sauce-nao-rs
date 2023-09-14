@@ -1,13 +1,14 @@
 /// Client type
-pub mod client;
+mod client;
 /// Image type
-pub mod image;
+mod image;
 /// Api types
 pub mod types;
 
 pub use self::client::Client;
 pub use self::image::Image;
 pub use self::types::ApiResponse;
+pub use self::types::ErrorResponse;
 pub use self::types::ResultEntry;
 
 /// The error type
@@ -23,7 +24,7 @@ pub enum Error {
 
     /// An API Error Occured
     #[error("api error")]
-    Api(#[from] self::types::ApiError),
+    Api(#[from] self::ErrorResponse),
 }
 
 #[cfg(test)]
@@ -83,6 +84,7 @@ mod tests {
             .search(image)
             .await
             .expect_err("anonymous searching should fail");
+        dbg!(err);
         // assert!(matches!(err, Error::Api(ApiError { .. })));
     }
 }
