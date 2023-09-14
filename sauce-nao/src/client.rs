@@ -4,6 +4,7 @@ use crate::Image;
 use crate::OkResponse;
 use std::sync::Arc;
 use url::Url;
+ use std::time::Duration;
 
 const DEFAULT_USER_AGENT_STR: &str =
     concat!(env!("CARGO_CRATE_NAME"), "/", env!("CARGO_PKG_VERSION"));
@@ -26,6 +27,7 @@ impl Client {
         Self {
             client: reqwest::Client::builder()
                 .user_agent(DEFAULT_USER_AGENT_STR)
+                .connect_timeout(Duration::from_secs(10))
                 .build()
                 .expect("failed to build saucenao client"),
             api_key: Arc::from(api_key),
