@@ -1,6 +1,12 @@
+/// An [`ApiResponse`].
+pub mod response;
 /// [`SearchJson`] types
 pub mod search_json;
 
+pub use self::response::ApiResponse;
+pub use self::response::IndexEntry;
+pub use self::response::OkResponse;
+pub use self::response::OkResponseHeader;
 pub use self::search_json::SearchJson;
 use std::collections::HashMap;
 
