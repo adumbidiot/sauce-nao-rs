@@ -35,7 +35,7 @@ impl<'de> serde::Deserialize<'de> for ApiResponse {
             .ok_or(D::Error::missing_field("header"))?;
         let status = header
             .get("status")
-            .ok_or(D::Error::missing_field("header.status"))?;
+            .ok_or(D::Error::missing_field("status"))?;
 
         let expected = &"an integer";
         let status = match status {
@@ -104,29 +104,22 @@ mod test {
     #[test]
     fn parse_search_json() {
         let response: ApiResponse = serde_json::from_str(SAMPLE).expect("failed to parse");
-        dbg!(&response);
-        /*
-
-        for result in res.results.iter() {
+        let response = response.into_result().expect("response is not ok");
+        for result in response.results.iter() {
             for extra in result.data.extra.iter() {
                 panic!("unknown data: {extra:#?}");
             }
         }
-        */
     }
 
     #[test]
     fn parse_imgur_json() {
         let response: ApiResponse = serde_json::from_str(IMGUR).expect("failed to parse");
-        dbg!(&response);
-        /*
-
-
-        for result in res.results.iter() {
+        let response = response.into_result().expect("response is not ok");
+        for result in response.results.iter() {
             for extra in result.data.extra.iter() {
                 panic!("unknown data: {extra:#?}");
             }
         }
-        */
     }
 }
