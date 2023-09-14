@@ -3,11 +3,12 @@ mod client;
 /// Image type
 mod image;
 /// Api types
-pub mod types;
+mod types;
 
 pub use self::client::Client;
 pub use self::image::Image;
 pub use self::types::ApiResponse;
+pub use self::types::Creator;
 pub use self::types::ErrorResponse;
 pub use self::types::OkResponse;
 pub use self::types::ResultEntry;

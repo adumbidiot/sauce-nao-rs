@@ -1,5 +1,5 @@
 use anyhow::Context;
-use sauce_nao::types::search_json::result_entry::Creator;
+use sauce_nao::Creator;
 
 /// User config
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

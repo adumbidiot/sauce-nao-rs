@@ -2,6 +2,7 @@
 pub mod response;
 
 pub use self::response::ApiResponse;
+pub use self::response::Creator;
 pub use self::response::ErrorResponse;
 pub use self::response::ErrorResponseHeader;
 pub use self::response::IndexEntry;

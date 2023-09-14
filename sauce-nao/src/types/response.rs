@@ -3,6 +3,7 @@ mod ok;
 
 pub use self::error::ErrorResponse;
 pub use self::error::ErrorResponseHeader;
+pub use self::ok::Creator;
 pub use self::ok::IndexEntry;
 pub use self::ok::OkResponse;
 pub use self::ok::OkResponseHeader;

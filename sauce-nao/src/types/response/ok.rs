@@ -1,6 +1,7 @@
 /// [`ResultEntry`] types
 pub mod result_entry;
 
+pub use self::result_entry::Creator;
 pub use self::result_entry::ResultEntry;
 use std::collections::HashMap;
 use std::marker::PhantomData;
