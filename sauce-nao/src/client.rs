@@ -3,8 +3,8 @@ use crate::Error;
 use crate::Image;
 use crate::OkResponse;
 use std::sync::Arc;
+use std::time::Duration;
 use url::Url;
- use std::time::Duration;
 
 const DEFAULT_USER_AGENT_STR: &str =
     concat!(env!("CARGO_CRATE_NAME"), "/", env!("CARGO_PKG_VERSION"));
