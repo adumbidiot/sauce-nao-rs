@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["sauce_nao","sauce_nao_cli"];

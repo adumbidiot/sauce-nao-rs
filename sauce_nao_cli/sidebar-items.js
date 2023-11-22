@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["OutputFormat","SubCommand"],"fn":["async_main","main"],"struct":["Config","LoginOptions","Options","SearchOptions"]};
