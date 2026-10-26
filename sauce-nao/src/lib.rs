@@ -10,7 +10,10 @@ pub use self::image::Image;
 pub use self::types::ApiResponse;
 pub use self::types::Creator;
 pub use self::types::ErrorResponse;
+pub use self::types::ErrorResponseHeader;
+pub use self::types::IndexEntry;
 pub use self::types::OkResponse;
+pub use self::types::OkResponseHeader;
 pub use self::types::ResultEntry;
 
 /// The error type

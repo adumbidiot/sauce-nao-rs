@@ -1,5 +1,5 @@
-use anyhow::bail;
 use anyhow::Context;
+use anyhow::bail;
 use reqwest::Url;
 use sauce_nao::Creator;
 use sauce_nao::Image;

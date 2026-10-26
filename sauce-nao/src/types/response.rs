@@ -12,6 +12,10 @@ use std::collections::HashMap;
 
 /// An Api Response
 #[derive(Debug)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "Error is the smaller variant, and will rarely be constructed."
+)]
 pub enum ApiResponse {
     /// The normal response
     Ok(OkResponse),
@@ -104,22 +108,22 @@ mod test {
 
     #[test]
     fn parse_search_json() {
-        let response: ApiResponse = serde_json::from_str(SAMPLE).expect("failed to parse");
-        let response = response.into_result().expect("response is not ok");
+        let response: ApiResponse = serde_json::from_str(SAMPLE).expect("Failed to parse");
+        let response = response.into_result().expect("Response is not ok");
         for result in response.results.iter() {
-            for extra in result.data.extra.iter() {
-                panic!("unknown data: {extra:#?}");
+            if let Some(extra) = result.data.extra.iter().next() {
+                panic!("Unknown data: {extra:#?}");
             }
         }
     }
 
     #[test]
     fn parse_imgur_json() {
-        let response: ApiResponse = serde_json::from_str(IMGUR).expect("failed to parse");
-        let response = response.into_result().expect("response is not ok");
+        let response: ApiResponse = serde_json::from_str(IMGUR).expect("Failed to parse");
+        let response = response.into_result().expect("Response is not ok");
         for result in response.results.iter() {
-            for extra in result.data.extra.iter() {
-                panic!("unknown data: {extra:#?}");
+            if let Some(extra) = result.data.extra.iter().next() {
+                panic!("Unknown data: {extra:#?}");
             }
         }
     }
