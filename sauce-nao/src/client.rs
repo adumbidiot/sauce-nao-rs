@@ -9,6 +9,8 @@ use url::Url;
 const DEFAULT_USER_AGENT_STR: &str =
     concat!(env!("CARGO_CRATE_NAME"), "/", env!("CARGO_PKG_VERSION"));
 const SEARCH_URL: &str = "https://saucenao.com/search.php";
+/// 0=normal html 1=xml api(not implemented) 2=json api
+const OUTPUT_TYPE_JSON: &str = "2";
 
 /// The sauce nao client
 #[derive(Debug, Clone)]
@@ -39,7 +41,10 @@ impl Client {
         let image = image.into();
         let mut url = Url::parse_with_params(
             SEARCH_URL,
-            &[("output_type", "2"), ("api_key", &*self.api_key)],
+            [
+                ("output_type", OUTPUT_TYPE_JSON),
+                ("api_key", &*self.api_key),
+            ],
         )?;
 
         let mut part = None;

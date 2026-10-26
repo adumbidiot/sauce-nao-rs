@@ -12,6 +12,10 @@ use std::collections::HashMap;
 
 /// An Api Response
 #[derive(Debug)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "Error is the smaller variant, and will rarely be constructed."
+)]
 pub enum ApiResponse {
     /// The normal response
     Ok(OkResponse),
