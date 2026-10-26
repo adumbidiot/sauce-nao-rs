@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["sauce_nao",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.99.0/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"sauce_nao/enum.Error.html\" title=\"enum sauce_nao::Error\">Error</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.99.0/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"struct\" href=\"sauce_nao/struct.ErrorResponse.html\" title=\"struct sauce_nao::ErrorResponse\">ErrorResponse</a>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[533]}

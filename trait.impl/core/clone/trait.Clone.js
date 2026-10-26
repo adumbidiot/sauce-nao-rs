@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["sauce_nao",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.99.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"sauce_nao/struct.Client.html\" title=\"struct sauce_nao::Client\">Client</a>",0]]],["sauce_nao_cli",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.99.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"sauce_nao_cli/struct.Config.html\" title=\"struct sauce_nao_cli::Config\">Config</a>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[268,281]}
